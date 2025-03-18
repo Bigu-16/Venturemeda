@@ -296,19 +296,23 @@ async def back_to_menu(update: Update, context: CallbackContext) -> None:
     else:
         await update.message.reply_text("🎓 Student Menu:", reply_markup=student_menu())
 
+async def cancel(update: Update, context: CallbackContext) -> int:
+    await update.message.reply_text("Operation cancelled.", reply_markup=ReplyKeyboardRemove())
+    return ConversationHandler.END
+
 def main():
     app = Application.builder().token(TOKEN).build()
 
     add_course_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex("➕ Add Course"), add_course)],
         states={ADDING_COURSE: [MessageHandler(filters.TEXT & ~filters.COMMAND, save_course)]},
-        fallbacks=[]
+        fallbacks=[CommandHandler("cancel", cancel)]
     )
 
     delete_course_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex("🗑 Delete Course"), delete_course)],
         states={DELETING_COURSE: [MessageHandler(filters.TEXT & ~filters.COMMAND, confirm_delete)]},
-        fallbacks=[]
+        fallbacks=[CommandHandler("cancel", cancel)]
     )
 
     upload_handler = ConversationHandler(
@@ -317,13 +321,13 @@ def main():
             SELECTING_COURSE: [MessageHandler(filters.TEXT & ~filters.COMMAND, upload_file)],
             UPLOADING_FILE: [MessageHandler(filters.Document.ALL | filters.VIDEO, save_file)]
         },
-        fallbacks=[]
+        fallbacks=[CommandHandler("cancel", cancel)]
     )
 
     explore_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex("📖 Explore Courses"), explore_courses)],
         states={ENROLLING_COURSE: [MessageHandler(filters.TEXT & ~filters.COMMAND, enroll_course)]},
-        fallbacks=[]
+        fallbacks=[CommandHandler("cancel", cancel)]
     )
 
     app.add_handler(CommandHandler("start", start))
