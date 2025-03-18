@@ -97,7 +97,7 @@ async def start(update: Update, context: CallbackContext) -> None:
     else:
         await context.bot.send_photo(
             chat_id=chat_id,
-            photo="C:/Users/abget/Downloads/welcome.jpg",  # Replace with actual image URL or local file
+            photo="https://drive.google.com/file/d/1K7UadWh7gPqkYR9mvTa2B3yhtIiAW5YD/view?usp=sharing",  # Replace with actual image URL or local file
             caption="Hello, welcome to Venturemeda! Please share your contact to continue."
         )
 
