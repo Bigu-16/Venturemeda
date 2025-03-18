@@ -20,6 +20,7 @@ load_dotenv()
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Replace with your actual bot token
 DB_PATH = os.getenv("DB_PATH")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # Your webhook URL
 
 # Define user roles
 ADMINS = {314589754}  # Replace with actual admin Telegram user IDs
@@ -30,7 +31,8 @@ if not TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN is not set in the .env file")
 if not DB_PATH:
     raise ValueError("DB_PATH is not set in the .env file")
-
+if not WEBHOOK_URL:
+    raise ValueError("WEBHOOK_URL is not set in the .env file")
 
 # Conversation states
 ADDING_COURSE, DELETING_COURSE, SELECTING_COURSE, UPLOADING_FILE, ENROLLING_COURSE = range(5)
@@ -341,7 +343,13 @@ def main():
     app.add_handler(MessageHandler(filters.CONTACT, contact_handler))
     app.add_handler(MessageHandler(filters.ALL & ~filters.CONTACT, block_messages))  # Block all messages except contact
 
-    app.run_polling()
+    # Set up the webhook
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=int(os.getenv("PORT", 8443)),
+        url_path=TOKEN,
+        webhook_url=f"{WEBHOOK_URL}/{TOKEN}"
+    )
 
 if __name__ == "__main__":
     main()
