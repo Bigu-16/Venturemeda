@@ -1,4 +1,6 @@
 import sqlite3
+import os
+from dotenv import load_dotenv
 from telegram import (
     Update, 
     ReplyKeyboardMarkup, 
@@ -14,13 +16,21 @@ from telegram.ext import (
     ConversationHandler
 )
 
-TOKEN = "7823854850:AAGwcumdHLpdZXdtlTMbO8Et4oH4CZLkQdE"  # Replace with your actual bot token
-DB_PATH = "courses.db"
+load_dotenv()
+
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")  # Replace with your actual bot token
+DB_PATH = os.getenv("DB_PATH")
 
 # Define user roles
 ADMINS = {314589754}  # Replace with actual admin Telegram user IDs
 STUDENTS = set()
 users_contact_shared = set()  # Store users who have shared contact
+
+if not TOKEN:
+    raise ValueError("TELEGRAM_BOT_TOKEN is not set in the .env file")
+if not DB_PATH:
+    raise ValueError("DB_PATH is not set in the .env file")
+
 
 # Conversation states
 ADDING_COURSE, DELETING_COURSE, SELECTING_COURSE, UPLOADING_FILE, ENROLLING_COURSE = range(5)
